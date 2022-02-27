@@ -1,6 +1,6 @@
 import pygame
+import random
 from pygame.locals import *
-
 
 
 pygame.init()
@@ -11,23 +11,24 @@ screen_height = 300
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("TIC-TAC-TOE Game")
 
-
+with_computer = 0
 markers = []
 clicked = False
 pos = []
 player = 1
-winner=0
-game_over=False
+winner = 0
+game_over = False
 
 
 gold = (255, 215, 0)
 
 
+font = pygame.font.SysFont(None, 40)
 
-font=pygame.font.SysFont(None,40)
-
-# Create rectangle for Play Again Button
-again_rect=Rect(screen_width//2-80,screen_height//2,160,50)
+# Create rectangle for Play Again Button player vs player
+again_rect = Rect(screen_width//2-80, screen_height//2, 55, 50)
+# Create rectangle for Play Again Button player vs computer
+again_rect_computer = Rect(screen_width//2-5, screen_height//2, 55, 50)
 
 
 def draw_grid():
@@ -59,44 +60,54 @@ def draw_markers():
 def check_winner():
     global winner
     global game_over
-    y_pos=0
+    y_pos = 0
     for x in markers:
-        # for checking columns 
-        if sum(x)==3:
-            winner=1
-            game_over=True
-        if sum(x)==-3:
-            winner=2
-            game_over=True
+        # for checking columns
+        if sum(x) == 3:
+            winner = 1
+            game_over = True
+        if sum(x) == -3:
+            winner = 2
+            game_over = True
         # for checking rows
-        if markers[0][y_pos]+markers[1][y_pos]+markers[2][y_pos]==3:
-            winner=1
-            game_over=True
-        if markers[0][y_pos]+markers[1][y_pos]+markers[2][y_pos]==-3:
-            winner=2
-            game_over=True
-        y_pos+=1
-        
+        if markers[0][y_pos]+markers[1][y_pos]+markers[2][y_pos] == 3:
+            winner = 1
+            game_over = True
+        if markers[0][y_pos]+markers[1][y_pos]+markers[2][y_pos] == -3:
+            winner = 2
+            game_over = True
+        y_pos += 1
+
     # Check diagonals
-    if markers[0][0]+markers[1][1]+markers[2][2]==3 or markers[2][0]+markers[1][1]+markers[0][2]==3:
-        winner=1
-        game_over=True
-    if markers[0][0]+markers[1][1]+markers[2][2]==-3 or markers[2][0]+markers[1][1]+markers[0][2]==-3:
-        winner=2
-        game_over=True
+    if markers[0][0]+markers[1][1]+markers[2][2] == 3 or markers[2][0]+markers[1][1]+markers[0][2] == 3:
+        winner = 1
+        game_over = True
+    if markers[0][0]+markers[1][1]+markers[2][2] == -3 or markers[2][0]+markers[1][1]+markers[0][2] == -3:
+        winner = 2
+        game_over = True
+
 
 def draw_winner(winner):
-    display_text=f"Player{str(winner)} wins!"
-    display_img=font.render(display_text,True,(0,0,0))
-    pygame.draw.rect(screen,(255,255,255),(screen_width//2-100,screen_height//2-60,200,50))
-    screen.blit(display_img,(screen_width//2-95,screen_height//2-50))
+    display_text = f"Player{str(winner)} wins!"
+    display_img = font.render(display_text, True, (0, 0, 0))
+    pygame.draw.rect(screen, (255, 255, 255), (screen_width //
+                     2-100, screen_height//2-60, 200, 50))
+    screen.blit(display_img, (screen_width//2-95, screen_height//2-50))
 
     # again_text
-    again_text="Play Again?"
-    again_img=font.render(again_text,True,(0,0,0))
-    pygame.draw.rect(screen,(255,255,255),again_rect)
-    screen.blit(again_img,(screen_width//2-80,screen_height//2+10))
+    player_vs_player_text = "PvP"
+    player_vs_player_img = font.render(player_vs_player_text, True, (0, 0, 0))
+    pygame.draw.rect(screen, (255, 255, 255), again_rect)
+    screen.blit(player_vs_player_img,
+                (screen_width//2-80, screen_height//2+10))
 
+    # again_text_with_computer
+    player_vs_computer_text = "PvC"
+    player_vs_computer_img = font.render(
+        player_vs_computer_text, True, (0, 0, 0))
+    pygame.draw.rect(screen, (255, 255, 255), again_rect_computer)
+    screen.blit(player_vs_computer_img,
+                (screen_width//2-5, screen_height//2+10))
 
 
 for x in range(3):
@@ -113,41 +124,66 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if game_over==0: 
-            if event.type == pygame.MOUSEBUTTONDOWN and clicked == False:
-                clicked = True
-            if event.type == pygame.MOUSEBUTTONUP and clicked == True:
-                clicked = False
-                pos = pygame.mouse.get_pos()
+        if game_over == 0:
+            if player == -1 and with_computer:
+                pos2 = [random.randint(0, 300), random.randint(0, 300)]
+                while (pos2[0] in range(pos[0]-100, pos[0]+100)) or (pos2[0] in range(pos[0]-80, pos[0]+80)):
+                    pos2 = [random.randint(0, 300), random.randint(0, 300)]
+                pos = pos2
                 cell_x = pos[0]
                 cell_y = pos[1]
                 if markers[cell_x//100][cell_y//100] == 0:
                     markers[cell_x//100][cell_y//100] = player
                     player *= -1
                     check_winner()
+            else:
+                if event.type == pygame.MOUSEBUTTONDOWN and clicked == False:
+                    clicked = True
+                if event.type == pygame.MOUSEBUTTONUP and clicked == True:
+                    clicked = False
+                    pos = pygame.mouse.get_pos()
+                    cell_x = pos[0]
+                    cell_y = pos[1]
+                    if markers[cell_x//100][cell_y//100] == 0:
+                        markers[cell_x//100][cell_y//100] = player
+                        player *= -1
+                        check_winner()
 
-    if game_over==True:
+    if game_over == True:
         draw_winner(winner)
         # Check if player has again clicked on play again
         if event.type == pygame.MOUSEBUTTONDOWN and clicked == False:
             clicked = True
         if event.type == pygame.MOUSEBUTTONUP and clicked == True:
             clicked = False
-            pos=pygame.mouse.get_pos()
+            pos = pygame.mouse.get_pos()
             if again_rect.collidepoint(pos):
                 # resetting variables
                 markers = []
                 # clicked = False
                 pos = []
                 player = 1
-                winner=0
-                game_over=False
+                winner = 0
+                game_over = False
+                # for activation player vs computer
+                with_computer = 0
                 for x in range(3):
                     row = [0]*3
                     markers.append(row)
-
-
-
+            pos = pygame.mouse.get_pos()
+            if again_rect_computer.collidepoint(pos):
+                # resetting variables
+                markers = []
+                # clicked = False
+                pos = []
+                player = 1
+                winner = 0
+                game_over = False
+                # for activation player vs computer
+                with_computer = 1
+                for x in range(3):
+                    row = [0]*3
+                    markers.append(row)
 
     pygame.display.update()
 
