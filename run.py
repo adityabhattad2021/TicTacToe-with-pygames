@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from sympy import python
+
 
 
 pygame.init()
@@ -133,18 +133,18 @@ while run:
             clicked = True
         if event.type == pygame.MOUSEBUTTONUP and clicked == True:
             clicked = False
-        pos=pygame.mouse.get_pos()
-        if again_rect.collidepoint(pos):
-            # resetting variables
-            markers = []
-            # clicked = False
-            pos = []
-            player = 1
-            winner=0
-            game_over=False
-            for x in range(3):
-                row = [0]*3
-                markers.append(row)
+            pos=pygame.mouse.get_pos()
+            if again_rect.collidepoint(pos):
+                # resetting variables
+                markers = []
+                # clicked = False
+                pos = []
+                player = 1
+                winner=0
+                game_over=False
+                for x in range(3):
+                    row = [0]*3
+                    markers.append(row)
 
 
 
